@@ -14,6 +14,7 @@ function installTypescript(){
 	npm install typescript
 }
 
+
 function installAwsCdk(){
 	echo "Install aws-cdk ${INPUT_CDK_VERSION}"
 	if [ "${INPUT_CDK_VERSION}" == "latest" ]; then
@@ -62,6 +63,11 @@ function installPipRequirements(){
 
 function runCdk(){
 	echo "Run cdk ${INPUT_CDK_SUBCOMMAND} ${*} \"${INPUT_CDK_STACK}\""
+
+	if [ ! -z "${INPUT_DOCKERHUB_USERNAME}" ] && [ ! -z "${INPUT_DOCKERHUB_PASSWORD}" ]; then
+		docker login -u ${INPUT_DOCKERHUB_USERNAME} -p ${INPUT_DOCKERHUB_PASSWORD}
+	fi
+
 	set -o pipefail
 	cdk ${INPUT_CDK_SUBCOMMAND} ${*} "${INPUT_CDK_STACK}" 2>&1 | tee output.log
 	exitCode=${?}
